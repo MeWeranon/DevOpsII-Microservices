@@ -8,8 +8,8 @@ def user_name():
     data = []
     conn = sqlite3.connect(db_folder)
     sql = """
-        SELECT user, password , name
-        FROM username 
+        SELECT name, category , price ,instock
+        FROM items 
         ORDER BY name
     """
     cursor = conn.execute(sql)
@@ -17,9 +17,10 @@ def user_name():
 
     for row in rows:
         record = {
-            'user': row[0],
-            'password': row[1],
-            'name': row[2]
+            'name': row[0],
+            'category': row[1],
+            'price': row[2],
+            'instock' : row[3]
             }
         data.append(record)
     
@@ -30,43 +31,57 @@ def find_username(user):
     data = []
     conn = sqlite3.connect(db_folder)
     sql = """
-        SELECT user, password , name
-        FROM username 
-        WHERE user=?
+        SELECT name, category , price ,instock
+        FROM items 
+        WHERE name=?
     """
     val = (user,)
     cursor = conn.execute(sql,val)
     rows = cursor.fetchone()
 
     record = {
-        'user': rows[0],
-        'password': rows[1],
-        'name': rows[2]
+        'name': row[0],
+        'category': row[1],
+        'price': row[2],
+        'instock' : row[3]
         }
     data.append(record)
     
     conn.close()
     return data
 
-def user_name_add(user,passwd,name):
+def user_name_add(name,category,price,instock):
     conn = sqlite3.connect(db_folder)
     sql = """
-        INSERT INTO username(user,password,name)
-        VALUES(?,?,?)
+        INSERT INTO items(name,category,price,instock)
+        VALUES(?,?,?,?)
     """
-    val = (user,passwd,name)
-    cursor = conn.execute(sql, val)
+    val = (name,category,price,instock)
+    conn.execute(sql, val)
     conn.commit()
     conn.close()
     return "Created successfully"
 
+def update_item(name ,category, price, instock, prename):
+    conn = sqlite3.connect(db_folder)
+    sql = """
+        UPDATE items
+        SET name=? ,category=? ,price=? ,instock=?
+        WHERE name=?
+    """
+    val = (name, category ,price, instock ,prename)
+    conn.execute(sql, val)
+    conn.commit()
+    conn.close()
+    return "Update successfully"
+
 def delete_user(user):
     conn = sqlite3.connect(db_folder)
     sql = """
-        DELETE FROM username
-        WHERE user = ?
+        DELETE FROM items
+        WHERE name = ?
     """
-    cursor = conn.execute(sql, (user,))
+    conn.execute(sql, (user,))
     conn.commit()
     conn.close()
     return "Deleted successfully"
